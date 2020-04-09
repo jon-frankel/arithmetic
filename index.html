@@ -100,83 +100,83 @@
 </body>
 
 <script type="text/javascript">
-    const e = React.createElement;
-    const many = (n, f) => Array(n).fill(null).map(f);
+	const e = React.createElement;
+	const many = (n, f) => Array(n).fill(null).map(f);
 
-    class ObservableState {
-        constructor() {
-            this.state = {};
-            this.observers = [];
-        }
-
-        observe(f) {
-            this.observers.push(f);
+	class ObservableState {
+		constructor() {
+			this.state = {};
+			this.observers = [];
 		}
 
-        set(prop, val) {
-            this.state[prop] = val;
-            this.broadcast();
+		observe(f) {
+			this.observers.push(f);
+		}
+
+		set(prop, val) {
+			this.state[prop] = val;
+			this.broadcast();
 		}
 
 		increment(prop) {
-            this.state[prop]++;
-            this.broadcast();
+			this.state[prop]++;
+			this.broadcast();
 		}
 
 		broadcast() {
-            this.observers.forEach(f => f(this.state))
+			this.observers.forEach(f => f(this.state))
 		}
 	}
 
 	const observableState = new ObservableState();
 
-    class Hello extends React.Component {
-        render() {
-            return e('div', {className: "greetings salutations"}, `Hello ${this.props.toWhat}`);
-        }
-    }
+	class Hello extends React.Component {
+		render() {
+			return e('div', {className: "greetings salutations"}, `Hello ${this.props.toWhat}`);
+		}
+	}
 
-    class Addend extends React.Component {
-        render() {
-            return e(
-                'div',
+	class Addend extends React.Component {
+		render() {
+			return e(
+				'div',
 				{className: 'addend'},
 				e('div', {className: 'plus'}, this.props.plus ? '+' : ''),
 				e('span', null, this.props.value)
-            );
+			);
 		}
 	}
 
 	class SolutionInput extends React.Component {
-        constructor(props) {
-            super(props);
-            this.validate = this.validate.bind(this);
-        }
+		constructor(props) {
+			super(props);
+			this.validate = this.validate.bind(this);
+		}
 
-        /**
+		/**
 		 * If the user clicks a digit in the input field, clear out the current value.
-         */
-        clearOnKeyDown(event) {
+		 */
+		clearOnKeyDown(event) {
 			let char = String.fromCharCode(event.keyCode);
-            if (/[0-9]/.test(char)) {
-                event.currentTarget.value = null;
-            }
+			if (/[0-9]/.test(char)) {
+				event.currentTarget.value = null;
+			}
 		}
 
-        validate(event) {
+		validate(event) {
 			if (event.currentTarget.value === this.props.answer) {
-			    event.currentTarget.setAttribute('class', 'correct');
+				event.currentTarget.setAttribute('class', 'correct');
 			} else if (event.currentTarget.value) { // Don't mark it incorrect if the value was merely cleared out
-                event.currentTarget.setAttribute('class', 'incorrect');
-                observableState.increment('errors');
-            }
+				event.currentTarget.setAttribute('class', 'incorrect');
+				observableState.increment('errors');
+			}
 		}
 
-        render() {
-            return e(
-                'input',
+		render() {
+			return e(
+				'input',
 				{
-				    type: 'text',
+					type: 'text',
 					size: 1,
 					maxLength: 1,
 					onChange: this.validate,
@@ -187,74 +187,74 @@
 	}
 
 	class Sum extends React.Component {
-        getInputs() {
-            return String(this.props.sum)
+		getInputs() {
+			return String(this.props.sum)
 				.split('')
 				.map((answer) => {
-				    return e(SolutionInput, {answer})
+					return e(SolutionInput, {answer})
 				})
 			;
 		}
 
-        render() {
-            return e('div', {className: 'sum'}, ...this.getInputs());
+		render() {
+			return e('div', {className: 'sum'}, ...this.getInputs());
 		}
 	}
 
-    class MathProblem extends React.Component {
+	class MathProblem extends React.Component {
 		constructor(props) {
 			super(props);
-            this.addend1 = Math.floor(Math.random() * 10);
-            this.addend2 = Math.floor(Math.random() * 10 + 10);
-            this.sum = this.addend1 + this.addend2;
+			this.addend1 = Math.floor(Math.random() * 10);
+			this.addend2 = Math.floor(Math.random() * 10 + 10);
+			this.sum = this.addend1 + this.addend2;
 		}
-        render() {
-            return e(
-                'div',
+		render() {
+			return e(
+				'div',
 				{className: 'math-problem'},
 				e(Addend, {value: this.addend1}),
-                e(Addend, {value: this.addend2, plus: true}),
+				e(Addend, {value: this.addend2, plus: true}),
 				e(Sum, {sum: this.sum})
 			);
 		}
 	}
 
 	class Page extends React.Component {
-        render() {
-            return e('div', {className: 'page'}, ...many(6, (_, k) => e(MathProblem, {key: k})));
+		render() {
+			return e('div', {className: 'page'}, ...many(6, (_, k) => e(MathProblem, {key: k})));
 		}
 	}
 
 	class Errors extends React.Component {
-        constructor(props) {
-            super(props);
-            this.update = this.update.bind(this);
-            this.state = {errors: 0};
-            observableState.set('errors', 0);
-        }
-
-        componentDidMount() {
-            observableState.observe(this.update);
+		constructor(props) {
+			super(props);
+			this.update = this.update.bind(this);
+			this.state = {errors: 0};
+			observableState.set('errors', 0);
 		}
 
-        update(state) {
-            this.setState({errors: state.errors});
+		componentDidMount() {
+			observableState.observe(this.update);
+		}
+
+		update(state) {
+			this.setState({errors: state.errors});
 		}
 
 		render() {
-            return e('div', {className: 'errorFloaty no-print'}, `Mistakes: ${this.state.errors}`);
+			return e('div', {className: 'errorFloaty no-print'}, `Mistakes: ${this.state.errors}`);
 		}
 	}
 
 	class MathProblems extends React.Component {
-        render() {
-            return e('div', {id: 'container'}, e(Errors, null), ...many(2, (_, k) => e(Page, {key: k})));
-        }
+		render() {
+			return e('div', {id: 'container'}, e(Errors, null), ...many(2, (_, k) => e(Page, {key: k})));
+		}
 	}
 
-    ReactDOM.render(
-        e(MathProblems, null),
-        document.getElementById('root')
-    );
+	ReactDOM.render(
+		e(MathProblems, null),
+		document.getElementById('root')
+	);
 </script>
 </html>
