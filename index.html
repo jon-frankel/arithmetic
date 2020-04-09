@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sofie's Math Problems</title>
+
+	<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+	<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+	<style type="text/css">
+		body {
+			margin: 0;
+		}
+
+		#container {
+			width: 8.5in;
+			height: 11in;
+			padding: .5in;
+			float: left;
+			font-family: "Courier";
+		}
+
+		.math-problem {
+			width: 45%;
+			height: 33%;
+			margin-right: 5%;
+			float: left;
+		}
+
+		.addend, .sum {
+			width: 100%;
+			height: 33%;
+			float: left;
+			text-align: right;
+			font-size: 80px;
+			position: relative;
+		}
+
+		.addend span, .sum span {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+		}
+
+		.addend .plus {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+		}
+
+		.sum {
+			border-top: solid black 2px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="root">
+	</div>
+</body>
+
+<script type="text/javascript">
+    const e = React.createElement;
+    const many = (n, f) => Array(n).fill(null).map(f);
+
+    class Hello extends React.Component {
+        render() {
+            return e('div', {className: "greetings salutations"}, `Hello ${this.props.toWhat}`);
+        }
+    }
+
+    class Addend extends React.Component {
+        render() {
+            return e(
+                'div',
+				{className: 'addend'},
+				e('div', {className: 'plus'}, this.props.plus ? '+' : ''),
+				e('span', null, this.props.value)
+            );
+		}
+	}
+
+	class Sum extends React.Component {
+        render() {
+            return e('div', {className: 'sum'}, e('span', null, '\t'));
+		}
+	}
+
+    class MathProblem extends React.Component {
+		constructor(props) {
+			super(props);
+            this.addend1 = Math.floor(Math.random() * 10);
+            this.addend2 = Math.floor(Math.random() * 10 + 10);
+            this.sum = this.addend1 + this.addend2;
+		}
+        render() {
+            return e(
+                'div',
+				{className: 'math-problem'},
+				e(Addend, {value: this.addend1}),
+                e(Addend, {value: this.addend2, plus: true}),
+				e(Sum, {sum: this.sum})
+			);
+		}
+	}
+
+	class MathProblems extends React.Component {
+        render() {
+            return e('div', {id: 'container'}, many(6, (_, k) => e(MathProblem, {key: k})));
+        }
+	}
+
+    ReactDOM.render(
+        e(MathProblems, null),
+        document.getElementById('root')
+    );
+</script>
+</html>
